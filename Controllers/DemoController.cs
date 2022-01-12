@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using API.Entities;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers{
 [ApiController]
@@ -16,6 +16,20 @@ return ctx.produits.ToList<Produit>();
 public void create (Produit p)
 {ctx.produits.Add(p);
 ctx.SaveChanges();}
+
+[HttpPost ("vendeur/{id}")]
+public void addToStore (Produit p ,int id)
+{ Vendeur v=ctx.vendeurs.Include(v=>v.magasin).ThenInclude(x=>x.produits).Where(x=>x.id==id).FirstOrDefault();
+        v.magasin.produits.Add(p);
+    //ctx.produits.Add(p);
+ctx.SaveChanges();
+
+
+
+}
+
+
+
 
        [HttpDelete]
         public void Delete(int id)

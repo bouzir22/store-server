@@ -50,9 +50,13 @@ Console.WriteLine(c.panier.id);
   foreach (var kv in ps)
    {
        PanierProduit pp=new PanierProduit();
+       Produit produit=ctx.produits.Find(kv.Key);
   pp.panier=panier;
-  pp.produit=ctx.produits.Find(kv.Key);
+  pp.produit=produit;
       ctx.panierProduits.Add(pp);
+      produit.Quantite-=kv.Value;
+      ctx.produits.Update(produit);
+      
       pp.quantite=kv.Value;
       
        }
@@ -76,6 +80,16 @@ c.panier=panier;
 
 
 }
+[HttpDelete("{id}")]
+public void viderPanier(int id)
+  {Client client =ctx.clients.Include(x=>x.panier).ThenInclude(x=>x.produits). Where(p=>p.ClientId==id).FirstOrDefault();
+      
+      client.panier.produits.Clear();
+        ctx.clients.Update(client);ctx.SaveChanges();
+        
+        
+        
+        }
 
 [HttpGet]
 public ICollection<Panier> getAll(){
